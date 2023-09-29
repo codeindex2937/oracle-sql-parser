@@ -109,6 +109,12 @@ type InlineConstraint struct {
 type OutOfLineConstraint struct {
 	tableStructDef
 	InlineConstraint
+	Columns   []*element.Identifier
+	Reference *ReferenceClause
+}
+
+type ReferenceClause struct {
+	Table   *TableName
 	Columns []*element.Identifier
 }
 
@@ -122,8 +128,8 @@ type CreateIndexStmt struct {
 }
 
 /*
-	Drop Table  Statement
-	see: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-INDEX.html#GUID-1F89BBC0-825F-4215-AF71-7588E31D8BFE
+Drop Table  Statement
+see: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CREATE-INDEX.html#GUID-1F89BBC0-825F-4215-AF71-7588E31D8BFE
 */
 type DropTableStmt struct {
 	node
@@ -131,8 +137,8 @@ type DropTableStmt struct {
 }
 
 /*
-	Drop Index  Statement
-	see: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/DROP-INDEX.html#GUID-F60F75DF-2866-4F93-BB7F-8FCE64BF67B6
+Drop Index  Statement
+see: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/DROP-INDEX.html#GUID-F60F75DF-2866-4F93-BB7F-8FCE64BF67B6
 */
 type DropIndexStmt struct {
 	node

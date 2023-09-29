@@ -263,9 +263,9 @@ func nextQuery(yylex interface{}) string {
     _zone
 
 /* identifier */
-    _singleQuoteStr 	"single quotes string"
-    _doubleQuoteStr 	"double quotes string"
-    _nonquotedIdentifier    "nonquoted identifier"
+    _singleQuoteStr 	// single quotes string
+    _doubleQuoteStr 	// double quotes string
+    _nonquotedIdentifier    // nonquoted identifier
 
 /* keyword group, for resolve confict */
     _not_deferrable
@@ -275,7 +275,7 @@ func nextQuery(yylex interface{}) string {
     _drop_index
 
 %token <i>
-    _intNumber 		"int number"
+    _intNumber 		// int number
 
 // define type for all structure
 %type <i>
@@ -294,8 +294,8 @@ func nextQuery(yylex interface{}) string {
 
 %type <node>
     EmptyStmt
-    Statement 		"all statement"
-    AlterTableStmt	"*ast.AlterTableStmt"
+    Statement 		// all statement
+    AlterTableStmt	// *ast.AlterTableStmt
     CreateTableStmt
     CreateIndexStmt
     DropIndexStmt
@@ -360,6 +360,7 @@ func nextQuery(yylex interface{}) string {
     InlineConstraintBody
     DropConstraintClauses
     DropConstraintClause
+    ReferencesClause
 
 %start Start
 
@@ -2387,7 +2388,13 @@ ExceptionsClause:
 ////|   ReferencesClause ConstraintState
 
 ReferencesClause:
-    _references TableName ColumnNameListOrEmpty ReferencesOnDelete
+    _references TableName '(' ColumnNameList ')'
+    {
+        clause := &ast.ReferenceClause{}
+        clause.Columns = $4.([]*element.Identifier)
+        clause.Table = $2.(*ast.TableName)
+	    $$ = clause
+    }
 
 ColumnNameListOrEmpty:
     {
@@ -2434,6 +2441,7 @@ OutOfLineConstraintBody:
         constraint := &ast.OutOfLineConstraint{}
 	    constraint.Type = ast.ConstraintTypeReferences
 	    constraint.Columns = $4.([]*element.Identifier)
+	    constraint.Reference = $6.(*ast.ReferenceClause)
 	    $$ = constraint
     }
 //|   ConstraintCheckCondition // todo
