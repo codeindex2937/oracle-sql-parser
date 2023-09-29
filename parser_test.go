@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sjjian/oracle-sql-parser/ast"
+	"github.com/codeindex2937/oracle-sql-parser/ast"
 	"github.com/stretchr/testify/assert"
 )
 

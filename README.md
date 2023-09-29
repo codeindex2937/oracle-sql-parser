@@ -23,8 +23,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/sjjian/oracle-sql-parser"
-	"github.com/sjjian/oracle-sql-parser/ast"
+	"github.com/codeindex2937/oracle-sql-parser"
+	"github.com/codeindex2937/oracle-sql-parser/ast"
 )
 
 func main() {

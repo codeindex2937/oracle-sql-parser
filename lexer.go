@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sjjian/oracle-sql-parser/ast"
+	"github.com/codeindex2937/oracle-sql-parser/ast"
 	"github.com/timtadh/lexmachine"
 	"github.com/timtadh/lexmachine/machines"
 )

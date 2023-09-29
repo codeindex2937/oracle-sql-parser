@@ -2,7 +2,8 @@ package parser
 
 import (
 	"fmt"
-	"github.com/sjjian/oracle-sql-parser/ast"
+
+	"github.com/codeindex2937/oracle-sql-parser/ast"
 )
 
 func Parser(query string) ([]ast.Node, error) {

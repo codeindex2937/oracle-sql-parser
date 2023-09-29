@@ -4,8 +4,8 @@ package parser
 import (
 	"strings"
 
-	"github.com/sjjian/oracle-sql-parser/ast"
-	"github.com/sjjian/oracle-sql-parser/ast/element"
+	"github.com/codeindex2937/oracle-sql-parser/ast"
+	"github.com/codeindex2937/oracle-sql-parser/ast/element"
 )
 
 func nextQuery(yylex interface{}) string {
