@@ -2436,7 +2436,7 @@ OutOfLineConstraintBody:
 	    constraint.Columns = $4.([]*element.Identifier)
 	    $$ = constraint
     }
-|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState
+|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState ReferencesOnDelete
     {
         constraint := &ast.OutOfLineConstraint{}
 	    constraint.Type = ast.ConstraintTypeReferences
