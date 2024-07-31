@@ -208,6 +208,7 @@ var unReservedKeyword = map[string]int{
 	"cascade":                 _cascade,
 	"cell_flash_cache":        _cell_flash_cache,
 	"character":               _character,
+	"check":                   _check,
 	"checkpoint":              _checkpoint,
 	"clob":                    _clob,
 	"collate":                 _collate,

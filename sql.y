@@ -109,6 +109,7 @@ func nextQuery(yylex interface{}) string {
     _cascade
     _cell_flash_cache
     _character
+    _check
     _checkpoint
     _clob
     _collate
@@ -506,6 +507,7 @@ UnReservedKeyword:
 |   _cascade
 |   _cell_flash_cache
 |   _character
+|   _check
 |   _checkpoint
 |   _clob
 |   _collate
@@ -2444,7 +2446,10 @@ OutOfLineConstraintBody:
 	    constraint.Reference = $6.(*ast.ReferenceClause)
 	    $$ = constraint
     }
-//|   ConstraintCheckCondition // todo
+|   _check '(' IsNullExpression ')'
+    {
+        $$ = &ast.OutOfLineConstraint{}
+    }
 
 //OutOfLineRefConstraint:
 //    _scope _for '(' RefType ')' _is TableName
@@ -2539,5 +2544,12 @@ MemoptimizeWrite:
 Expr:
     _intNumber
 |   _singleQuoteStr
+
+IsNullExpression:
+| ColumnReference _is _null
+| ColumnReference _is _not _null
+
+ColumnReference:
+| ColumnName
 
 %%
