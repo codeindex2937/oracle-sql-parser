@@ -109,13 +109,19 @@ type InlineConstraint struct {
 type OutOfLineConstraint struct {
 	tableStructDef
 	InlineConstraint
-	Columns   []*element.Identifier
-	Reference *ReferenceClause
+	Columns      []*element.Identifier
+	Reference    *ReferenceClause
+	UpdateAction *ReferenceOption
+	DeleteAction *ReferenceOption
 }
 
 type ReferenceClause struct {
 	Table   *TableName
 	Columns []*element.Identifier
+}
+
+type ReferenceOption struct {
+	Type ReferenceAction
 }
 
 /*

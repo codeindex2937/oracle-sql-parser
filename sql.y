@@ -30,6 +30,7 @@ func nextQuery(yylex interface{}) string {
 %token <str>
 /* reserved keyword */
 /* see: https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Oracle-SQL-Reserved-Words.html#GUID-55C49D1E-BE08-4C50-A9DD-8593EB925612 */
+    _action
     _add
     _all
     _alter
@@ -73,6 +74,7 @@ func nextQuery(yylex interface{}) string {
     _pctfree
     _raw
     _rename
+    _restrict
     _row
     _rowid
     _rows
@@ -83,6 +85,7 @@ func nextQuery(yylex interface{}) string {
     _table
     _to
     _unique
+    _update
     _validate
     _varchar
     _varchar2
@@ -362,6 +365,9 @@ func nextQuery(yylex interface{}) string {
     DropConstraintClauses
     DropConstraintClause
     ReferencesClause
+    ReferencesOnUpdate
+    ReferencesOnDelete
+    ReferenceOption
 
 %start Start
 
@@ -487,7 +493,8 @@ Identifier:
     }
 
 UnReservedKeyword:
-    _advanced
+    _action
+|   _advanced
 |   _always
 |   _archive
 |   _at
@@ -2404,12 +2411,38 @@ ColumnNameListOrEmpty:
     }
 |   '(' ColumnNameList ')'
 
-ReferencesOnDelete:
+ReferencesOnUpdate:
+    _update ReferenceOption
     {
-        // empty
+        $$ = &ast.ReferenceOption{
+            Type: $2.(ast.ReferenceAction),
+        }
     }
-|   _on _delete _cascade
-|   _on _delete _set _null
+
+ReferencesOnDelete:
+    _delete ReferenceOption
+    {
+        $$ = &ast.ReferenceOption{
+            Type: $2.(ast.ReferenceAction),
+        }
+    }
+
+ReferenceOption:
+    _restrict {
+	    $$ = ast.RefOptRestrict
+    }
+|   _cascade {
+	    $$ = ast.RefOptCascade
+    }
+|   _set _null {
+	    $$ = ast.RefOptSetNull
+    }
+|   _no _action {
+	    $$ = ast.RefOptNoAction
+    }
+|   _set _default {
+	    $$ = ast.RefOptSetDefault
+    }
 
 OutOfLineConstraint:
     ConstraintName OutOfLineConstraintBody
@@ -2438,12 +2471,40 @@ OutOfLineConstraintBody:
 	    constraint.Columns = $4.([]*element.Identifier)
 	    $$ = constraint
     }
-|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState ReferencesOnDelete
+|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState
     {
         constraint := &ast.OutOfLineConstraint{}
 	    constraint.Type = ast.ConstraintTypeReferences
 	    constraint.Columns = $4.([]*element.Identifier)
 	    constraint.Reference = $6.(*ast.ReferenceClause)
+	    $$ = constraint
+    }
+|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState _on ReferencesOnUpdate
+    {
+        constraint := &ast.OutOfLineConstraint{}
+	    constraint.Type = ast.ConstraintTypeReferences
+	    constraint.Columns = $4.([]*element.Identifier)
+	    constraint.Reference = $6.(*ast.ReferenceClause)
+	    constraint.UpdateAction = $9.(*ast.ReferenceOption)
+	    $$ = constraint
+    }
+|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState _on ReferencesOnDelete
+    {
+        constraint := &ast.OutOfLineConstraint{}
+	    constraint.Type = ast.ConstraintTypeReferences
+	    constraint.Columns = $4.([]*element.Identifier)
+	    constraint.Reference = $6.(*ast.ReferenceClause)
+	    constraint.DeleteAction = $9.(*ast.ReferenceOption)
+	    $$ = constraint
+    }
+|    _foreign _key '(' ColumnNameList ')' ReferencesClause ConstraintState _on ReferencesOnUpdate _on ReferencesOnDelete
+    {
+        constraint := &ast.OutOfLineConstraint{}
+	    constraint.Type = ast.ConstraintTypeReferences
+	    constraint.Columns = $4.([]*element.Identifier)
+	    constraint.Reference = $6.(*ast.ReferenceClause)
+	    constraint.UpdateAction = $9.(*ast.ReferenceOption)
+	    constraint.DeleteAction = $11.(*ast.ReferenceOption)
 	    $$ = constraint
     }
 |   _check '(' IsNullExpression ')'

@@ -128,6 +128,7 @@ var stdTokenMap = map[string]int{
 }
 
 var reservedKeyword = map[string]int{
+	"_action":    _action,
 	"add":        _add,
 	"all":        _all,
 	"alter":      _alter,
@@ -171,6 +172,7 @@ var reservedKeyword = map[string]int{
 	"pctfree":    _pctfree,
 	"raw":        _raw,
 	"rename":     _rename,
+	"restrict":   _restrict,
 	"row":        _row,
 	"rowid":      _rowid,
 	"rows":       _rows,
@@ -181,6 +183,7 @@ var reservedKeyword = map[string]int{
 	"table":      _table,
 	"to":         _to,
 	"unique":     _unique,
+	"update":     _update,
 	"validate":   _validate,
 	"varchar":    _varchar,
 	"varchar2":   _varchar2,

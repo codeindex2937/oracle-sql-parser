@@ -75,3 +75,13 @@ const (
 	DropColumnPropInvalidate
 	DropColumnPropOnline
 )
+
+type ReferenceAction int
+
+const (
+	RefOptNoAction ReferenceAction = iota
+	RefOptCascade
+	RefOptRestrict
+	RefOptSetNull
+	RefOptSetDefault
+)
