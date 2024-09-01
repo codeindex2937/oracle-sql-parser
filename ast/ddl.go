@@ -131,6 +131,20 @@ type ReferenceOption struct {
 
 type CreateIndexStmt struct {
 	node
+	Type      string
+	IndexName *IndexName
+	Index     *TableIndexClause
+}
+
+type TableIndexClause struct {
+	TableName  *TableName
+	Alias      *element.Identifier
+	IndexExprs []IndexExpr
+}
+
+type IndexExpr struct {
+	Column    *element.Identifier
+	Direction string
 }
 
 /*

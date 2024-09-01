@@ -295,6 +295,8 @@ func nextQuery(yylex interface{}) string {
 
 %type <str>
     UnReservedKeyword
+    IndexType
+    ColumnSortClause
 
 %type <node>
     EmptyStmt
@@ -368,6 +370,11 @@ func nextQuery(yylex interface{}) string {
     ReferencesOnUpdate
     ReferencesOnDelete
     ReferenceOption
+    IndexClause
+    TableIndexClause
+    TableAlias
+    IndexExprs
+    IndexExpr
 
 %start Start
 
@@ -1600,7 +1607,11 @@ RelTableProp:
 CreateIndexStmt:
     _create IndexType _index IndexName IndexIlmClause _on IndexClause CreateIndexUsable CreateIndexInvalidation
     {
-        $$ = &ast.CreateIndexStmt{}
+        $$ = &ast.CreateIndexStmt{
+            Type: $2,
+            IndexName: $4.(*ast.IndexName),
+            Index: $7.(*ast.TableIndexClause),
+        }
     }
 
 IndexType:
@@ -1615,7 +1626,12 @@ IndexIlmClause:
 
 IndexClause:
     ClusterIndexClause
+    {
+    }
 |   TableIndexClause
+    {
+        $$ = $1
+    }
 //|   BitmapJoinIndexClause // TODO
 
 ClusterIndexClause:
@@ -1659,6 +1675,14 @@ ParallelClause:
 
 TableIndexClause:
     TableName TableAlias '(' IndexExprs ')' IndexProps
+    {
+        alias, _ := $2.(*element.Identifier)
+        $$ = &ast.TableIndexClause{
+            TableName: $1.(*ast.TableName),
+            Alias: alias,
+            IndexExprs: $4.([]ast.IndexExpr),
+        }
+    }
 
 TableAlias:
     {
@@ -1668,18 +1692,36 @@ TableAlias:
 
 IndexExprs:
     IndexExpr
+    {
+        $$ = []ast.IndexExpr{$1.(ast.IndexExpr)}
+    }
 |   IndexExprs ',' IndexExpr
+    {
+        $$ = append($1.([]ast.IndexExpr), $3.(ast.IndexExpr))
+    }
 
 IndexExpr:
     ColumnName ColumnSortClause
+    {
+        $$ = ast.IndexExpr{
+            Column: $1.(*element.Identifier),
+            Direction: $2,
+        }
+    }
 //|   ColumnExpr ColumnSortClause // TODO
 
 ColumnSortClause:
     {
-        // empty
+        $$ = ""
     }
 |   _asc
+    {
+        $$ = $1
+    }
 |   _desc
+    {
+        $$ = $1
+    }
 
 IndexProps: // TODO: support golbal_partitioned_index, local_partitioned_index, "index type is ..."
     {

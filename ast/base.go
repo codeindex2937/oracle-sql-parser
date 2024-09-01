@@ -85,3 +85,10 @@ const (
 	RefOptSetNull
 	RefOptSetDefault
 )
+
+type SortDirection int
+
+const (
+	Ascend SortDirection = iota
+	Descend
+)
