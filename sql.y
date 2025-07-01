@@ -90,6 +90,7 @@ func nextQuery(yylex interface{}) string {
     _varchar
     _varchar2
     _with
+    _sequence
 
 /* unreserved keyword */
     _advanced
@@ -306,6 +307,7 @@ func nextQuery(yylex interface{}) string {
     CreateIndexStmt
     DropIndexStmt
     DropTableStmt
+    CreateSequenceStmt
 
 %type <anything>
     StatementList
@@ -375,6 +377,8 @@ func nextQuery(yylex interface{}) string {
     TableAlias
     IndexExprs
     IndexExpr
+    SequenceOptionsOrEmpty
+    SequenceOptions
 
 %start Start
 
@@ -408,6 +412,7 @@ Statement:
 |   CreateIndexStmt
 |   DropIndexStmt
 |   DropTableStmt
+|   CreateSequenceStmt
 
 EmptyStmt:
     {
@@ -1766,6 +1771,37 @@ DropTableStmt:
             TableName:  $3.(*ast.TableName),
         }
     }
+
+CreateSequenceStmt: _create _sequence Identifier SequenceOptionsOrEmpty
+    {
+        // empty
+    }
+
+SequenceOptionsOrEmpty:
+    {
+        // empty
+    }
+|   SequenceOptions
+
+SequenceOptions: SequenceOption
+    {
+        // empty
+    }
+|   SequenceOptions SequenceOption
+
+SequenceOption:
+    _start _with _intNumber
+|   _increment _by _intNumber
+|   _maxvalue _intNumber
+|   _nomaxvalue
+|   _minvalue _intNumber
+|   _nominvalue
+|   _cycle
+|   _nocycle
+|   _cache _intNumber
+|   _nocache
+|   _order
+|   _noorder
 
 CascadeConstraintsOrEmpty:
     {

@@ -188,6 +188,7 @@ var reservedKeyword = map[string]int{
 	"varchar":    _varchar,
 	"varchar2":   _varchar2,
 	"with":       _with,
+	"sequence":   _sequence,
 }
 
 var unReservedKeyword = map[string]int{
