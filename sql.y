@@ -313,6 +313,7 @@ func nextQuery(yylex interface{}) string {
     StatementList
     TableName
     IndexName
+    SequenceName
     Identifier
     IdentifierOrKeyword
     ColumnName
@@ -474,6 +475,21 @@ IndexName:
 UsingIndexName: // for using index clause
     Identifier
 |   Identifier '.' Identifier
+
+SequenceName:
+    IdentifierOrKeyword
+    {
+    	$$ = &ast.SequenceName{
+	        Sequence: $1.(*element.Identifier),
+	    }
+    }
+|   IdentifierOrKeyword '.' IdentifierOrKeyword
+    {
+    	$$ = &ast.SequenceName{
+            Schema: $1.(*element.Identifier),
+            Sequence: $3.(*element.Identifier),
+	    }
+    }
 
 IdentifierOrKeyword:
     Identifier
@@ -1772,7 +1788,7 @@ DropTableStmt:
         }
     }
 
-CreateSequenceStmt: _create _sequence Identifier SequenceOptionsOrEmpty
+CreateSequenceStmt: _create _sequence SequenceName SequenceOptionsOrEmpty
     {
         // empty
     }

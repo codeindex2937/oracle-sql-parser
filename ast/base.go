@@ -14,6 +14,11 @@ type IndexName struct {
 	Index  *element.Identifier
 }
 
+type SequenceName struct {
+	Schema   *element.Identifier
+	Sequence *element.Identifier
+}
+
 type Collation struct {
 	Name *element.Identifier
 }
