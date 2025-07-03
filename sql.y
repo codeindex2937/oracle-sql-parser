@@ -51,11 +51,13 @@ func nextQuery(yylex interface{}) string {
     _float
     _for
     _from
+    _grant
     _identified
     _immediate
     _increment
     _index
     _initial
+    _insert
     _integer
     _into
     _is
@@ -79,6 +81,7 @@ func nextQuery(yylex interface{}) string {
     _rowid
     _rows
     _select
+    _sequence
     _set
     _smallInt
     _start
@@ -90,7 +93,6 @@ func nextQuery(yylex interface{}) string {
     _varchar
     _varchar2
     _with
-    _sequence
 
 /* unreserved keyword */
     _advanced
@@ -298,6 +300,7 @@ func nextQuery(yylex interface{}) string {
     UnReservedKeyword
     IndexType
     ColumnSortClause
+    Privilege
 
 %type <node>
     EmptyStmt
@@ -308,6 +311,7 @@ func nextQuery(yylex interface{}) string {
     DropIndexStmt
     DropTableStmt
     CreateSequenceStmt
+    GrantStmt
 
 %type <anything>
     StatementList
@@ -380,6 +384,7 @@ func nextQuery(yylex interface{}) string {
     IndexExpr
     SequenceOptionsOrEmpty
     SequenceOptions
+    PrivilegeList
 
 %start Start
 
@@ -414,6 +419,7 @@ Statement:
 |   DropIndexStmt
 |   DropTableStmt
 |   CreateSequenceStmt
+|   GrantStmt
 
 EmptyStmt:
     {
@@ -1818,6 +1824,28 @@ SequenceOption:
 |   _nocache
 |   _order
 |   _noorder
+
+GrantStmt: _grant PrivilegeList _on TableName _to GranteeList
+    {
+        // empty
+    }
+
+PrivilegeList:
+    Privilege
+    {
+        // empty
+    }
+|   PrivilegeList ',' Privilege
+
+Privilege:
+    _select
+|   _insert
+|   _update
+|   _delete
+
+GranteeList:
+    Identifier
+|   GranteeList ',' Identifier
 
 CascadeConstraintsOrEmpty:
     {

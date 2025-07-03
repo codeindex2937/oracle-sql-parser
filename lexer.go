@@ -149,12 +149,14 @@ var reservedKeyword = map[string]int{
 	"float":      _float,
 	"for":        _for,
 	"from":       _from,
+	"grant":      _grant,
 	"identified": _identified,
 	"immediate":  _immediate,
 	"increment":  _increment,
 	"index":      _index,
 	"initial":    _initial,
 	"integer":    _integer,
+	"insert":     _insert,
 	"into":       _into,
 	"is":         _is,
 	"level":      _level,
@@ -177,6 +179,7 @@ var reservedKeyword = map[string]int{
 	"rowid":      _rowid,
 	"rows":       _rows,
 	"select":     _select,
+	"sequence":   _sequence,
 	"set":        _set,
 	"smallint":   _smallInt,
 	"start":      _start,
@@ -188,7 +191,6 @@ var reservedKeyword = map[string]int{
 	"varchar":    _varchar,
 	"varchar2":   _varchar2,
 	"with":       _with,
-	"sequence":   _sequence,
 }
 
 var unReservedKeyword = map[string]int{
