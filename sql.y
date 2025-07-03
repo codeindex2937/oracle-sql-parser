@@ -1425,10 +1425,6 @@ SegmentAttrClause:
 |   LoggingClause
 |   TableCompression // Note: this is not include in oracle 21 syntax docs?
 
-PhysicalAttrsClause:
-    PhysicalAttrClause
-|   PhysicalAttrsClause PhysicalAttrClause
-
 PhysicalAttrClause:
     _pctfree _intNumber
 |   _pctused _intNumber
@@ -2526,12 +2522,6 @@ ReferencesClause:
         clause.Table = $2.(*ast.TableName)
 	    $$ = clause
     }
-
-ColumnNameListOrEmpty:
-    {
-        // empty
-    }
-|   '(' ColumnNameList ')'
 
 ReferencesOnUpdate:
     _update ReferenceOption
