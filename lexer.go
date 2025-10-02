@@ -138,6 +138,7 @@ var reservedKeyword = map[string]int{
 	"char":       _char,
 	"cluster":    _cluster,
 	"column":     _column,
+	"comment":    _comment,
 	"compress":   _compress,
 	"create":     _create,
 	"date":       _date,

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/codeindex2937/oracle-sql-parser/ast"
+	"github.com/codeindex2937/oracle-sql-parser/ast/element"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,4 +74,20 @@ alter table db1.table1 add (name varchar(255));`)
 	assert.Equal(t, "create table db1.table1 (id number(10));", stmt[0].Text())
 	assert.IsType(t, &ast.AlterTableStmt{}, stmt[1])
 	assert.Equal(t, "alter table db1.table1 add (name varchar(255));", stmt[1].Text())
+}
+
+func TestTableComment(t *testing.T) {
+	stmt, err := Parser(`comment on table tbl is 'a';comment on TABLE s1.tb2 is 'a'`)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(stmt))
+	assert.IsType(t, &ast.CommentStmt{}, stmt[0])
+	assert.Equal(t, "comment on table tbl is 'a'", stmt[0].Text())
+	assert.Equal(t, "table", stmt[0].(*ast.CommentStmt).Type)
+	assert.Equal(t, (*element.Identifier)(nil), stmt[0].(*ast.CommentStmt).TableName.Schema)
+	assert.Equal(t, "tbl", stmt[0].(*ast.CommentStmt).TableName.Table.Value)
+	assert.IsType(t, &ast.CommentStmt{}, stmt[1])
+	assert.Equal(t, ";comment on TABLE s1.tb2 is 'a'", stmt[1].Text())
+	assert.Equal(t, "TABLE", stmt[1].(*ast.CommentStmt).Type)
+	assert.Equal(t, "s1", stmt[1].(*ast.CommentStmt).TableName.Schema.Value)
+	assert.Equal(t, "tb2", stmt[1].(*ast.CommentStmt).TableName.Table.Value)
 }

@@ -164,3 +164,14 @@ type DropIndexStmt struct {
 	node
 	IndexName *IndexName
 }
+
+/*
+Comment  Statement
+see: https://docs.oracle.com/en/database/oracle/oracle-database/18/sqlrf/COMMENT.html
+*/
+type CommentStmt struct {
+	node
+	Type       string
+	TableName  *TableName
+	ColumnName *element.Identifier
+}

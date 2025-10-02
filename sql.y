@@ -40,6 +40,7 @@ func nextQuery(yylex interface{}) string {
     _char
     _cluster
     _column
+    _comment
     _compress
     _create
     _date
@@ -312,6 +313,7 @@ func nextQuery(yylex interface{}) string {
     DropTableStmt
     CreateSequenceStmt
     GrantStmt
+    CommentStmt
 
 %type <anything>
     StatementList
@@ -420,6 +422,7 @@ Statement:
 |   DropTableStmt
 |   CreateSequenceStmt
 |   GrantStmt
+|   CommentStmt
 
 EmptyStmt:
     {
@@ -1824,6 +1827,36 @@ SequenceOption:
 GrantStmt: _grant PrivilegeList _on TableName _to GranteeList
     {
         // empty
+    }
+
+CommentStmt:
+    _comment _on _table TableName _is _singleQuoteStr
+    {
+        $$ = &ast.CommentStmt{
+            Type: $3,
+            TableName: $4.(*ast.TableName),
+        }
+    }
+    | _comment _on _column IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
+    {
+        $$ = &ast.CommentStmt{
+            Type: $3,
+            TableName: &ast.TableName{
+                Table: $4.(*element.Identifier),
+            },
+            ColumnName: $6.(*element.Identifier),
+        }
+    }
+    | _comment _on _column IdentifierOrKeyword '.' IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
+    {
+        $$ = &ast.CommentStmt{
+            Type: $3,
+            TableName: &ast.TableName{
+                Schema:	$4.(*element.Identifier),
+                Table: 	$6.(*element.Identifier),
+            },
+            ColumnName: $8.(*element.Identifier),
+        }
     }
 
 PrivilegeList:
