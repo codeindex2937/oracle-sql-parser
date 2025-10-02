@@ -97,3 +97,10 @@ const (
 	Ascend SortDirection = iota
 	Descend
 )
+
+type CommentType int
+
+const (
+	CommentOnTable CommentType = iota
+	CommentOnColumn
+)

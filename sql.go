@@ -2561,31 +2561,34 @@ yydefault:
 		yyDollar = yyS[yypt-6 : yypt+1]
 		{
 			yyVAL.node = &ast.CommentStmt{
-				Type:      yyDollar[3].str,
+				Type:      ast.CommentOnTable,
 				TableName: yyDollar[4].anything.(*ast.TableName),
+				Comment:   yyDollar[6].str,
 			}
 		}
 	case 536:
 		yyDollar = yyS[yypt-8 : yypt+1]
 		{
 			yyVAL.node = &ast.CommentStmt{
-				Type: yyDollar[3].str,
+				Type: ast.CommentOnColumn,
 				TableName: &ast.TableName{
 					Table: yyDollar[4].anything.(*element.Identifier),
 				},
 				ColumnName: yyDollar[6].anything.(*element.Identifier),
+				Comment:    yyDollar[8].str,
 			}
 		}
 	case 537:
 		yyDollar = yyS[yypt-10 : yypt+1]
 		{
 			yyVAL.node = &ast.CommentStmt{
-				Type: yyDollar[3].str,
+				Type: ast.CommentOnColumn,
 				TableName: &ast.TableName{
 					Schema: yyDollar[4].anything.(*element.Identifier),
 					Table:  yyDollar[6].anything.(*element.Identifier),
 				},
 				ColumnName: yyDollar[8].anything.(*element.Identifier),
+				Comment:    yyDollar[10].str,
 			}
 		}
 	case 538:

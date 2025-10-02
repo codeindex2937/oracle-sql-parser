@@ -171,7 +171,8 @@ see: https://docs.oracle.com/en/database/oracle/oracle-database/18/sqlrf/COMMENT
 */
 type CommentStmt struct {
 	node
-	Type       string
+	Type       CommentType
 	TableName  *TableName
 	ColumnName *element.Identifier
+	Comment    string
 }

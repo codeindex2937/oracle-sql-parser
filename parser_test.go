@@ -82,14 +82,36 @@ func TestTableComment(t *testing.T) {
 	assert.Equal(t, 2, len(stmt))
 	assert.IsType(t, &ast.CommentStmt{}, stmt[0])
 	assert.Equal(t, "comment on table tbl is 'a'", stmt[0].Text())
-	assert.Equal(t, "table", stmt[0].(*ast.CommentStmt).Type)
+	assert.Equal(t, ast.CommentOnTable, stmt[0].(*ast.CommentStmt).Type)
 	assert.Equal(t, (*element.Identifier)(nil), stmt[0].(*ast.CommentStmt).TableName.Schema)
 	assert.Equal(t, "tbl", stmt[0].(*ast.CommentStmt).TableName.Table.Value)
+	assert.Equal(t, "a", stmt[0].(*ast.CommentStmt).Comment)
 	assert.IsType(t, &ast.CommentStmt{}, stmt[1])
 	assert.Equal(t, ";comment on TABLE s1.tb2 is 'a'", stmt[1].Text())
-	assert.Equal(t, "TABLE", stmt[1].(*ast.CommentStmt).Type)
+	assert.Equal(t, ast.CommentOnTable, stmt[1].(*ast.CommentStmt).Type)
 	assert.Equal(t, "s1", stmt[1].(*ast.CommentStmt).TableName.Schema.Value)
 	assert.Equal(t, "tb2", stmt[1].(*ast.CommentStmt).TableName.Table.Value)
+	assert.Equal(t, "a", stmt[1].(*ast.CommentStmt).Comment)
+}
+
+func TestColumnComment(t *testing.T) {
+	stmt, err := Parser(`comment on column tbl.col1 is 'a';comment on COLUMN s1.tb1.col2 is 'a'`)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(stmt))
+	assert.IsType(t, &ast.CommentStmt{}, stmt[0])
+	assert.Equal(t, "comment on column tbl.col1 is 'a'", stmt[0].Text())
+	assert.Equal(t, ast.CommentOnColumn, stmt[0].(*ast.CommentStmt).Type)
+	assert.Equal(t, (*element.Identifier)(nil), stmt[0].(*ast.CommentStmt).TableName.Schema)
+	assert.Equal(t, "tbl", stmt[0].(*ast.CommentStmt).TableName.Table.Value)
+	assert.Equal(t, "col1", stmt[0].(*ast.CommentStmt).ColumnName.Value)
+	assert.Equal(t, "a", stmt[0].(*ast.CommentStmt).Comment)
+	assert.IsType(t, &ast.CommentStmt{}, stmt[1])
+	assert.Equal(t, ";comment on COLUMN s1.tb1.col2 is 'a'", stmt[1].Text())
+	assert.Equal(t, ast.CommentOnColumn, stmt[1].(*ast.CommentStmt).Type)
+	assert.Equal(t, "s1", stmt[1].(*ast.CommentStmt).TableName.Schema.Value)
+	assert.Equal(t, "tb1", stmt[1].(*ast.CommentStmt).TableName.Table.Value)
+	assert.Equal(t, "col2", stmt[1].(*ast.CommentStmt).ColumnName.Value)
+	assert.Equal(t, "a", stmt[1].(*ast.CommentStmt).Comment)
 }
 
 func TestCreateSeuenceStmt(t *testing.T) {

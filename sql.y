@@ -1833,29 +1833,32 @@ CommentStmt:
     _comment _on _table TableName _is _singleQuoteStr
     {
         $$ = &ast.CommentStmt{
-            Type: $3,
+            Type: ast.CommentOnTable,
             TableName: $4.(*ast.TableName),
+            Comment: $6,
         }
     }
     | _comment _on _column IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
     {
         $$ = &ast.CommentStmt{
-            Type: $3,
+            Type: ast.CommentOnColumn,
             TableName: &ast.TableName{
                 Table: $4.(*element.Identifier),
             },
             ColumnName: $6.(*element.Identifier),
+            Comment: $8,
         }
     }
     | _comment _on _column IdentifierOrKeyword '.' IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
     {
         $$ = &ast.CommentStmt{
-            Type: $3,
+            Type: ast.CommentOnColumn,
             TableName: &ast.TableName{
                 Schema:	$4.(*element.Identifier),
                 Table: 	$6.(*element.Identifier),
             },
             ColumnName: $8.(*element.Identifier),
+            Comment: $10,
         }
     }
 
