@@ -91,3 +91,44 @@ func TestTableComment(t *testing.T) {
 	assert.Equal(t, "s1", stmt[1].(*ast.CommentStmt).TableName.Schema.Value)
 	assert.Equal(t, "tb2", stmt[1].(*ast.CommentStmt).TableName.Table.Value)
 }
+
+func TestCreateSeuenceStmt(t *testing.T) {
+	_, err := Parser(`CREATE SEQUENCE ABC.SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999 CYCLE NOORDER`)
+	assert.NoError(t, err)
+}
+
+func TestTableReference(t *testing.T) {
+	stmt, err := Parser(`CREATE TABLE MINOR (CONSTRAINT fk_name FOREIGN KEY (ID1,ID2) REFERENCES MAJOR(ID3,ID4) ON UPDATE CASCADE ON DELETE CASCADE);`)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(stmt))
+	assert.IsType(t, &ast.CreateTableStmt{}, stmt[0])
+	assert.Equal(t, "CREATE TABLE MINOR (CONSTRAINT fk_name FOREIGN KEY (ID1,ID2) REFERENCES MAJOR(ID3,ID4) ON UPDATE CASCADE ON DELETE CASCADE);", stmt[0].Text())
+	assert.Equal(t, 1, len(stmt[0].(*ast.CreateTableStmt).RelTable.TableStructs))
+
+	assert.IsType(t, &ast.OutOfLineConstraint{}, stmt[0].(*ast.CreateTableStmt).RelTable.TableStructs[0])
+	tbl := stmt[0].(*ast.CreateTableStmt).RelTable.TableStructs[0].(*ast.OutOfLineConstraint)
+	assert.IsType(t, 2, len(tbl.Columns))
+	assert.IsType(t, "ID3", tbl.Columns[0].Value)
+	assert.IsType(t, "ID4", tbl.Columns[1].Value)
+	assert.IsType(t, "MAJOR", tbl.Reference.Table.Table.Value)
+	assert.IsType(t, 2, len(tbl.Reference.Columns))
+	assert.IsType(t, "ID1", tbl.Reference.Columns[0].Value)
+	assert.IsType(t, "ID2", tbl.Reference.Columns[1].Value)
+	assert.IsType(t, ast.RefOptCascade, tbl.DeleteAction.Type)
+	assert.IsType(t, ast.RefOptCascade, tbl.UpdateAction.Type)
+}
+
+func TestIgnoreTableCheckConstraint(t *testing.T) {
+	_, err := Parser(`CREATE TABLE TBL (CONSTRAINT c CHECK (ID5 IS NOT NULL))`)
+	assert.NoError(t, err)
+}
+
+func TestIgnoreTableIndexSorted(t *testing.T) {
+	_, err := Parser(`CREATE SEQUENCE ABC.SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999 CYCLE NOORDER`)
+	assert.NoError(t, err)
+}
+
+func TestIgnoreGrantStatement(t *testing.T) {
+	_, err := Parser(`GRANT SELECT,DELETE,UPDATE,INSERT ON ABC.TBL3 TO SOMEONE`)
+	assert.NoError(t, err)
+}
