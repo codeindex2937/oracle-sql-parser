@@ -302,6 +302,7 @@ func nextQuery(yylex interface{}) string {
     IndexType
     ColumnSortClause
     Privilege
+    SingleQuoteStrJoined
 
 %type <node>
     EmptyStmt
@@ -1830,7 +1831,7 @@ GrantStmt: _grant PrivilegeList _on TableName _to GranteeList
     }
 
 CommentStmt:
-    _comment _on _table TableName _is _singleQuoteStr
+    _comment _on _table TableName _is SingleQuoteStrJoined
     {
         $$ = &ast.CommentStmt{
             Type: ast.CommentOnTable,
@@ -1838,7 +1839,7 @@ CommentStmt:
             Comment: $6,
         }
     }
-    | _comment _on _column IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
+    | _comment _on _column IdentifierOrKeyword '.' Identifier _is SingleQuoteStrJoined
     {
         $$ = &ast.CommentStmt{
             Type: ast.CommentOnColumn,
@@ -1849,7 +1850,7 @@ CommentStmt:
             Comment: $8,
         }
     }
-    | _comment _on _column IdentifierOrKeyword '.' IdentifierOrKeyword '.' Identifier _is _singleQuoteStr
+    | _comment _on _column IdentifierOrKeyword '.' IdentifierOrKeyword '.' Identifier _is SingleQuoteStrJoined
     {
         $$ = &ast.CommentStmt{
             Type: ast.CommentOnColumn,
@@ -2760,5 +2761,16 @@ IsNullExpression:
 
 ColumnReference:
 | ColumnName
+
+SingleQuoteStrJoined:
+    _singleQuoteStr
+    {
+        $$ = $1
+    }
+|    SingleQuoteStrJoined _singleQuoteStr
+    {
+        $$ += "'"
+        $$ += $2
+    }
 
 %%
